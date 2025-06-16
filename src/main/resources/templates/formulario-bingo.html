@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Bingo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4 card">
+    <div class="card-header">
+        <h3>Formulario Bingo Comfaoriente</h3>
+    </div>
+    <div class="card-body">
+        <form th:action="@{/formulario/guardar}" th:object="${formulario}" method="post">
+
+            <div class="mb-3">
+                <label for="bingo" class="form-label fw-bold">SELECCIONE EL BINGO EN EL QUE DESEA PARTICIPAR:</label>
+                <select class="form-select" id="bingo" th:field="*{bingo}" required>
+                    <option value="">-- Elige un bingo --</option>
+                    <option th:each="b : ${listaDeBingos}"
+                            th:value="${b.idbingo}"
+                            th:text="${b.nombrebingo}"></option>
+                </select>
+            </div>
+
+            <p class="fw-bold">DATOS DEL AFILIADO:</p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tipoDocAfi" class="form-label">TIPO DE DOCUMENTO DEL AFILIADO:</label>
+                    <select class="form-select" id="tipoDocAfi" th:field="*{afiliado.id.coddoc}" required>
+                        <option value="">-- Seleccione --</option>
+                        <option th:each="tipoDoc : ${listaDeTiposDoc}"
+                                th:value="${tipoDoc.coddoc}"
+                                th:text="${tipoDoc.detalle}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="docAfi" class="form-label">NUMERO DE DOCUMENTO:</label>
+                    <input type="text" class="form-control" id="docAfi" th:field="*{afiliado.id.cedtra}" required>
+                </div>
+            </div>
+                <div class="col-md-4 mb-3">
+                    <label for="nombreAfiliado" class="form-label">NOMBRE AFILIADO:</label>
+                    <input type="text" class="form-control" id="nombreAfiliado" readonly>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6 mb-3">
+                        <label for="nitEmpresa" class="form-label">NIT EMPRESA:</label>
+                        <input type="text" class="form-control" id="nitEmpresa" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nombreEmpresa" class="form-label">NOMBRE EMPRESA:</label>
+                        <input type="text" class="form-control" id="nombreEmpresa" readonly>
+                    </div>
+                </div>
+            <div id="afiliadoError" class="form-text text-danger"></div>
+            <p class="fw-bold">DATOS DE CONTACTO:</p>
+            <div class="mb-3">
+                <label for="telefono" class="form-label">NUMERO DE TELEFONO CELULAR:</label>
+                <input type="text" class="form-control" id="telefono" th:field="*{telefono}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="correo" class="form-label">CORREO ELECTRÓNICO:</label>
+                <input type="email" class="form-control" id="correo" th:field="*{correo}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="cupos" class="form-label">CANTIDAD DE CARTONES:</label>
+                <input type="number" class="form-control" id="cupos" th:field="*{cupos}" required min="1">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">INSCRIBIRME</button>
+                <a th:href="@{/bingos}" class="btn btn-secondary">CANCELAR</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Obtenemos TODOS los elementos con los que vamos a trabajar
+        const tipoDocSelect = document.getElementById('tipoDocAfi');
+        const numDocInput = document.getElementById('docAfi');
+        const nombreAfiliadoInput = document.getElementById('nombreAfiliado');
+        const nitEmpresaInput = document.getElementById('nitEmpresa');
+        const nombreEmpresaInput = document.getElementById('nombreEmpresa');
+        const telefonoInput = document.getElementById('telefono'); // <-- Nuevo
+        const correoInput = document.getElementById('correo');     // <-- Nuevo
+        const errorDiv = document.getElementById('afiliadoError');
+        const cuposInput = document.getElementById('cupos');
+
+        async function buscarAfiliado() {
+            const tipoDoc = tipoDocSelect.value;
+            const numDoc = numDocInput.value;
+
+            // Limpiamos todos los campos antes de una nueva búsqueda
+            nombreAfiliadoInput.value = '';
+            nitEmpresaInput.value = '';
+            nombreEmpresaInput.value = '';
+            telefonoInput.value = ''; // <-- Nuevo
+            correoInput.value = '';   // <-- Nuevo
+            errorDiv.textContent = '';
+            cuposInput.value = '0';
+
+            if (!tipoDoc || !numDoc) { return; }
+
+            try {
+                const response = await fetch(`/api/afiliados/${tipoDoc}/${numDoc}`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Llenamos todos los campos con la data recibida del API
+                    nombreAfiliadoInput.value = data.nombreAfiliado;
+                    nitEmpresaInput.value = data.nitEmpresa;
+                    nombreEmpresaInput.value = data.nombreEmpresa;
+                    telefonoInput.value = data.telefono; // <-- Nuevo
+                    correoInput.value = data.correo;     // <-- Nuevo
+                    cuposInput.value = data.cupos;
+                } else {
+                    const errorMessage = await response.text();
+                    errorDiv.textContent = errorMessage;
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                errorDiv.textContent = 'Error al conectar con el servidor.';
+            }
+        }
+
+        tipoDocSelect.addEventListener('change', buscarAfiliado);
+        numDocInput.addEventListener('blur', buscarAfiliado);
+    });
+</script>
+</body>
+</html>
