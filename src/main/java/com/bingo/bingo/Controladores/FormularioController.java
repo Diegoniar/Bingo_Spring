@@ -71,4 +71,9 @@ public class FormularioController {
 
         return "redirect:/inscripcion-exitosa";
     }
+
+    @GetMapping("/inscripcion-exitosa")
+    public String mostrarPaginaDeExito() {
+        return "inscripcion-exitosa"; // Esto le dice a Spring que busque un archivo HTML con este nombre.
+    }
 }
