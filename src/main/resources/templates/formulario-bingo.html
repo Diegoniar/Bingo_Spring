@@ -80,15 +80,13 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
-        // Obtenemos TODOS los elementos con los que vamos a trabajar
         const tipoDocSelect = document.getElementById('tipoDocAfi');
         const numDocInput = document.getElementById('docAfi');
         const nombreAfiliadoInput = document.getElementById('nombreAfiliado');
         const nitEmpresaInput = document.getElementById('nitEmpresa');
         const nombreEmpresaInput = document.getElementById('nombreEmpresa');
-        const telefonoInput = document.getElementById('telefono'); // <-- Nuevo
-        const correoInput = document.getElementById('correo');     // <-- Nuevo
+        const telefonoInput = document.getElementById('telefono');
+        const correoInput = document.getElementById('correo');
         const errorDiv = document.getElementById('afiliadoError');
         const cuposInput = document.getElementById('cupos');
 
@@ -100,8 +98,8 @@
             nombreAfiliadoInput.value = '';
             nitEmpresaInput.value = '';
             nombreEmpresaInput.value = '';
-            telefonoInput.value = ''; // <-- Nuevo
-            correoInput.value = '';   // <-- Nuevo
+            telefonoInput.value = '';
+            correoInput.value = '';
             errorDiv.textContent = '';
             cuposInput.value = '0';
 
@@ -112,12 +110,11 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    // Llenamos todos los campos con la data recibida del API
                     nombreAfiliadoInput.value = data.nombreAfiliado;
                     nitEmpresaInput.value = data.nitEmpresa;
                     nombreEmpresaInput.value = data.nombreEmpresa;
-                    telefonoInput.value = data.telefono; // <-- Nuevo
-                    correoInput.value = data.correo;     // <-- Nuevo
+                    telefonoInput.value = data.telefono;
+                    correoInput.value = data.correo;
                     cuposInput.value = data.cupos;
                 } else {
                     const errorMessage = await response.text();
@@ -131,6 +128,20 @@
 
         tipoDocSelect.addEventListener('change', buscarAfiliado);
         numDocInput.addEventListener('blur', buscarAfiliado);
+
+
+        const miFormulario = document.querySelector('form'); // Selecciona la etiqueta <form>
+        const botonInscribir = miFormulario.querySelector('button[type="submit"]'); // Selecciona el botón de envío
+
+        miFormulario.addEventListener('submit', function() {
+            // Esto se ejecuta JUSTO cuando el usuario hace clic en "INSCRIBIRME"
+
+            // 1. Deshabilitamos el botón para que no se pueda hacer clic de nuevo.
+            botonInscribir.disabled = true;
+
+            // 2. (Opcional) Cambiamos el texto para que el usuario sepa que algo está pasando.
+            botonInscribir.textContent = 'Procesando...';
+        });
     });
 </script>
 </body>

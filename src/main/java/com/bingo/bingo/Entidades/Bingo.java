@@ -1,24 +1,35 @@
 package com.bingo.bingo.Entidades;
 
 import java.sql.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 
 @Entity
 @Table(name = "bingo")
 public class Bingo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idbingo")
     private Integer idbingo;
+
+    @NotEmpty(message = "El nombre del bingo no puede estar vacío.")
+    @Size(min = 5, max = 100, message = "El nombre debe tener entre 5 y 100 caracteres.")
     @Column(name = "nombrebingo")
     private String nombrebingo;
+
+    @NotNull(message = "Debe especificar una fecha para el bingo.")
+    @FutureOrPresent(message = "La fecha del bingo no puede ser en el pasado.")
     @Column(name = "fechabingo")
     private Date fechabingo;
+
+    @NotEmpty(message = "Debe seleccionar un estado.")
     @Column(name = "estado")
     private String estado;
+
     @Column(name = "poster")
     private String poster;
 

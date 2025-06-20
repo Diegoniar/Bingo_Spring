@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -34,19 +36,21 @@ public class FormularioController {
 
     @GetMapping("/formulario/nuevo")
     public String mostrarFormulario(Model model) {
+            java.util.Date fechaActual = new java.util.Date();
+
             // 1. Obtenemos la lista de bingos para el menú desplegable
-            List<Bingo> bingosActivos = bingoRepository.findAll();
+            List<Bingo> bingosVigentes = bingoRepository.findByFechabingoGreaterThanEqual(fechaActual);
             List<Gener18> tiposDeDocumento = gener18Repository.findByEstado("A");
 
             model.addAttribute("formulario", new BingoFormulario());
-            model.addAttribute("listaDeBingos", bingosActivos);
+            model.addAttribute("listaDeBingos", bingosVigentes);
             model.addAttribute("listaDeTiposDoc", tiposDeDocumento);
 
             return "formulario-bingo";
     }
 
     @PostMapping("/formulario/guardar")
-    public String guardarFormulario(@ModelAttribute("formulario") BingoFormulario formulario) {
+    public String guardarFormulario(@Valid @ModelAttribute("formulario") BingoFormulario formulario) {
         System.out.println("Formulario recibido: " + formulario.toString());
         try {
             Subsi15Id afiliadoId = formulario.getAfiliado().getId();
@@ -60,9 +64,16 @@ public class FormularioController {
 
             formulario.setAfiliado(afiliadoCompleto);
             formulario.setBingo(bingoCompleto);
-
-            asignacionService.registrarInscripcionYAsignarCartones(formulario);
-
+            try {
+                asignacionService.registrarInscripcionYAsignarCartones(formulario);
+            }catch(Exception e) {
+                String mensajeError = "Ocurrió un error inesperado al procesar la inscripción.";
+                if (e.getCause() instanceof ConstraintViolationException) {
+                    mensajeError = "Ya existe una inscripción con este número de documento, correo o teléfono.";
+                }
+                System.err.println("Error: " + e.getMessage());
+                return "redirect:/formulario/nuevo?error=true";
+            }
 
         } catch (RuntimeException e) {
             System.err.println("Error al procesar la inscripción: " + e.getMessage());

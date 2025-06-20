@@ -15,6 +15,9 @@ public class BingoCarton {
     @Column(name = "rutacarton")
     private String rutacarton;
 
+    @Column(name = "estado")
+    private String estado;
+
     public int getId() {
         return id;
     }
@@ -29,6 +32,14 @@ public class BingoCarton {
 
     public void setRutacarton(String rutacarton) {
         this.rutacarton = rutacarton;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     @Override

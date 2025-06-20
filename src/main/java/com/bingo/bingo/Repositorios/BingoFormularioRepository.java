@@ -1,6 +1,8 @@
 package com.bingo.bingo.Repositorios;
 
+import com.bingo.bingo.Entidades.Bingo;
 import com.bingo.bingo.Entidades.BingoFormulario;
+import com.bingo.bingo.Entidades.Subsi15;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +15,5 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface BingoFormularioRepository extends JpaRepository<BingoFormulario, Integer> {
-
+    Optional<BingoFormulario> findByBingoAndAfiliado(Bingo bingo, Subsi15 afiliado);
 }

@@ -1,14 +1,18 @@
 package com.bingo.bingo.Entidades;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="bingo_formulario")
 public class BingoFormulario {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idformulario")
     private int idformulario;
 
+    @NotNull(message = "Debe seleccionar un afiliado.")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             // El 'name' ahora coincide con la columna real en la tabla 'bingo_formulario'
@@ -17,15 +21,19 @@ public class BingoFormulario {
     })
     private Subsi15 afiliado;
 
+    @NotNull(message = "El número de cupos es obligatorio.")
     @Column(name = "cupos")
     private int cupos;
 
+    @NotEmpty(message = "El número de teléfono no puede estar vacío.")
     @Column(name = "telefono")
     private String telefono;
 
+    @NotEmpty(message = "El correo electrónico no puede estar vacío.")
     @Column(name = "correo")
     private String correo;
 
+    @NotNull(message = "Debe seleccionar un bingo para participar.")
     @ManyToOne(fetch = FetchType.LAZY)
 // La columna 'idbingo' de esta tabla apunta a la columna 'idbingo' de la tabla 'bingo'
     @JoinColumn(name = "idbingo", referencedColumnName = "idbingo")
