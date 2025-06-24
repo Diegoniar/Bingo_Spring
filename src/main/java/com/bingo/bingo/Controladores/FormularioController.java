@@ -34,6 +34,12 @@ public class FormularioController {
     @Autowired
     private Subsi15Repository subsi15Repository;
 
+    @GetMapping("/")
+    public String mostrarPaginaPrincipal() {
+        // Redirige desde la raíz ("/") a la página que ya creamos para el formulario
+        return "redirect:/formulario/nuevo";
+    }
+
     @GetMapping("/formulario/nuevo")
     public String mostrarFormulario(Model model) {
             java.util.Date fechaActual = new java.util.Date();
